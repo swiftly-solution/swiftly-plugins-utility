@@ -1,0 +1,25 @@
+{
+  "name": "swiftly-plugins-utility",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/skuzzis/swiftly-plugins-utility",
+  "author": "skuzzis <andreieurt@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "esbuild --bundle --platform=node --target=node16.9.1 src/index.ts --outfile=dist/index.js",
+    "build:watch": "esbuild --watch --bundle --platform=node --target=node16.9.1 src/index.ts --outfile=dist/index.js",
+    "build:pack:windows": "pkg -o swiftly_utility -t node18-windows-x64 ./dist/index.js",
+    "build:pack:linux": "pkg -o swiftly_utility -t node18-linux-x86 ./dist/index.js",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@types/figlet": "^1.5.7",
+    "commander": "^11.1.0",
+    "discord.js": "^14.13.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.9",
+    "esbuild": "^0.19.5",
+    "typescript": "^5.2.2"
+  }
+}

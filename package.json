@@ -9,7 +9,7 @@
     "build": "esbuild --bundle --platform=node --target=node16.9.1 src/index.ts --outfile=dist/index.js",
     "build:watch": "esbuild --watch --bundle --platform=node --target=node16.9.1 src/index.ts --outfile=dist/index.js",
     "build:pack:windows": "pkg -o swiftly_utility -t node18-windows-x64 ./dist/index.js",
-    "build:pack:linux": "pkg -o swiftly_utility -t node18-linux-x86 ./dist/index.js",
+    "build:pack:linux": "pkg -o swiftly_utility -t node18-linux-x64 ./dist/index.js",
     "start": "node dist/index.js"
   },
   "dependencies": {

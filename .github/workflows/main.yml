@@ -34,7 +34,7 @@ jobs:
                   npm i -g yarn
                   yarn install
                   yarn global add esbuild
-                  yarn global add pkg
+                  yarn global add nexe
 
             - name: Converting TS to JS
               working-directory: swiftly-plugins-utility

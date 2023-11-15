@@ -25,25 +25,20 @@ export default async (config: Config, plugin_name: string) => {
 		mkdirSync(`${plugin_name}`);
 		mkdirSync(`${plugin_name}/src`, { recursive: true });
 		mkdirSync(`${plugin_name}/includes`, { recursive: true });
-		writeFileSync(`${plugin_name}/Makefile`, `CC_COMMAND = gcc
-CXX_COMMAND = g++
-PROJECT_NAME = TEST_PROJECT
+		writeFileSync(`${plugin_name}/Makefile`, `CC_COMMAND = ${config[config.os].cc}
+CXX_COMMAND = ${config[config.os].cxx}
+PROJECT_NAME = ${plugin_name}
 
 CURRENT_PATH=$(realpath .)
+BEHIND_PATH=$(realpath ..)
 SRC_DIR := src
 BUILD_DIR := output
 TEMP_DIR := temp
 LIBS_DIR := lib
 INCLUDES_FOLDER := $(CURRENT_PATH)/includes
-LIB_FILES :=
-ifeq ($(OS),Windows_NT)
-	LIB_FILES += "$(CURRENT_PATH)../lib/swiftly.lib"
-else
-	LIB_FILES += "$(CURRENT_PATH)../lib/swiftly.a"
-endif
 
-CC_FLAGS = -I"$(INCLUDES_FOLDER)" -I"$(CURRENT_PATH)../includes/"
-CXX_FLAGS = -I"$(INCLUDES_FOLDER)" -I"$(CURRENT_PATH)../includes/"
+CC_FLAGS = -I"$(INCLUDES_FOLDER)" -I"$(BEHIND_PATH)/includes"
+CXX_FLAGS = -I"$(INCLUDES_FOLDER)" -I"$(BEHIND_PATH)/includes" -lpthread
 
 rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 
@@ -70,8 +65,32 @@ ifeq ($(OS),Windows_NT)
 else
 	@rm -rf $(TEMP_DIR)
 endif`)
-		writeFileSync(`${plugin_name}/src/main.cpp`, `
+		writeFileSync(`${plugin_name}/src/main.cpp`, `#include <swiftly/swiftly.h>
+#include <swiftly/server.h>
+#include <swiftly/database.h>
+#include <swiftly/commands.h>
+#include <swiftly/configuration.h>
+#include <swiftly/logger.h>
+
 #include <main.h>
+
+Server *server = nullptr;
+PlayerManager *g_playerManager = nullptr;
+Database *db = nullptr;
+Commands *commands = nullptr;
+Configuration *config = nullptr;
+Logger *logger = nullptr;
+
+void OnProgramLoad(const char *pluginName, const char *mainFilePath)
+{
+	Swiftly_Setup(pluginName, mainFilePath);
+
+	server = new Server();
+	g_playerManager = new PlayerManager();
+	commands = new Commands(pluginName);
+	config = new Configuration();
+	logger = new Logger(mainFilePath, pluginName);
+}
 
 void OnPluginStart()
 {
@@ -80,16 +99,129 @@ void OnPluginStart()
 void OnPluginStop()
 {
 }
-		`);
-		writeFileSync(`${plugin_name}/includes/main.h`, `
-#ifdef __cplusplus
+
+bool OnClientConnected(Player *player)
+{
+	return true;
+}
+
+bool OnClientConnect(Player *player)
+{
+	return true;
+}
+
+void OnPlayerSpawn(Player *player)
+{
+}
+
+void OnGameTick(bool simulating, bool bFirstTick, bool bLastTick)
+{
+}
+
+bool OnPlayerChat(Player *player, const char *text, bool teamonly)
+{
+	return true;
+}
+
+const char *GetPluginAuthor()
+{
+	return "";
+}
+
+const char *GetPluginVersion()
+{
+	return "1.0.0";
+}
+
+const char *GetPluginName()
+{
+	return "${plugin_name}";
+}
+
+const char *GetPluginWebsite()
+{
+	return "";
+}`);
+
+		writeFileSync(`${plugin_name}/includes/main.h`, `#ifndef _main_h
+#define _main_h
+
+#include <stdint.h>
+#include <swiftly/swiftly.h>
+
+void OnPluginStart();
+void OnPluginStop();
+void OnProgramLoad(const char *pluginName, const char *mainFilePath);
+bool OnClientConnected(Player *player);
+bool OnClientConnect(Player *player);
+void OnPlayerSpawn(Player *player);
+void OnGameTick(bool simulating, bool bFirstTick, bool bLastTick);
+bool OnPlayerChat(Player *player, const char *text, bool teamonly);
+
 extern "C"
 {
-#endif
-	void OnPluginStart();
-	void OnPluginStop();
-#ifdef __cplusplus
+	void Internal_OnPluginStart()
+	{
+		print("");
+		OnPluginStart();
+	}
+	void Internal_OnPluginStop()
+	{
+		OnPluginStop();
+	}
+	void Internal_OnProgramLoad(const char *pluginName, const char *mainFilePath)
+	{
+		OnProgramLoad(pluginName, mainFilePath);
+	}
+	bool Internal_OnClientConnected(uint32_t slot)
+	{
+		Player *player = g_playerManager->GetPlayer(slot);
+		if (player == nullptr)
+			return false;
+
+		return OnClientConnected(player);
+	}
+	bool Internal_OnClientConnect(uint32_t slot)
+	{
+		Player *player = g_playerManager->GetPlayer(slot);
+		if (player == nullptr)
+			return false;
+
+		return OnClientConnect(player);
+	}
+	void Internal_OnPlayerSpawn(uint32_t slot)
+	{
+		Player *player = g_playerManager->GetPlayer(slot);
+		if (player == nullptr)
+			return;
+
+		OnPlayerSpawn(player);
+
+		if (player->IsFirstSpawn())
+			player->SetFirstSpawn(true);
+	}
+	bool Internal_OnPlayerChat(uint32_t slot, const char *text, bool teamonly)
+	{
+		Player *player = g_playerManager->GetPlayer(slot);
+		if (player == nullptr)
+			return false;
+
+		return OnPlayerChat(player, text, teamonly);
+	}
+	void Internal_RegisterPlayer(uint32_t slot, bool fakeClient)
+	{
+		g_playerManager->RegisterPlayer(new Player(slot, fakeClient));
+	}
+	void Internal_OnGameTick(bool simulating, bool bFirstTick, bool bLastTick)
+	{
+		OnGameTick(simulating, bFirstTick, bLastTick);
+	}
+	const char *GetPluginAuthor();
+	const char *GetPluginVersion();
+	const char *GetPluginName();
+	const char *GetPluginWebsite();
 }
+
 #endif
 		`);
 

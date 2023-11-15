@@ -27,12 +27,12 @@ jobs:
               with:
                 node-version: "18.x"
 
-            - name: Install GCC11
+            - name: Install GCC
               shell: bash
               run: |
-                  sudo apt update
-                  sudo apt install gcc g++ make cmake -y
-                  sudo apt install gcc-multilib -y
+                  apt update
+                  apt install gcc g++ make cmake -y
+                  apt install gcc-multilib -y
 
             - name: Installing dependencies
               working-directory: swiftly-plugins-utility

@@ -1,0 +1,67 @@
+name: "Swiftly Plugins Utility Compiler"
+
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+
+jobs:
+    build:
+        name: Build
+        runs-on: ${{ matrix.os }}
+
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [self-hosted]
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+              with:
+                  path: swiftly-plugins-utility
+                  submodules: recursive
+
+            - name: Setting up NodeJS 18.x
+              uses: actions/setup-node@v3
+              with:
+                node-version: "18.x"
+
+            - name: Installing dependencies
+              working-directory: swiftly-plugins-utility
+              shell: bash
+              run: |
+                  npm i -g yarn
+                  yarn install
+                  yarn global add esbuild
+                  yarn global add pkg
+
+            - name: Converting TS to JS
+              working-directory: swiftly-plugins-utility
+              shell: bash
+              run: |
+                  yarn build
+
+            - name: Building Binary Linux
+              working-directory: swiftly-plugins-utility
+              shell: bash
+              run: |
+                  yarn build:pack:linux
+
+            - name: Building Binary Windows
+              working-directory: swiftly-plugins-utility
+              shell: bash
+              run: |
+                  yarn build:pack:windows
+
+            - name: Upload Artifacts Windows
+              uses: actions/upload-artifact@v3
+              with:
+                  name: Swiftly Plugin Windows
+                  path: ${{ github.workspace }}/swiftly-plugins-utility/swiftly_utility.exe
+                  
+            - name: Upload Artifacts Linux
+              uses: actions/upload-artifact@v3
+              with:
+                  name: Swiftly Plugin Windows
+                  path: ${{ github.workspace }}/swiftly-plugins-utility/swiftly_utility

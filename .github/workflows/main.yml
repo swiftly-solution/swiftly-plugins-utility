@@ -10,7 +10,7 @@ jobs:
     build:
         name: Build
         runs-on: ${{ matrix.os }}
-
+        container: registry.gitlab.steamos.cloud/steamrt/sniper/sdk
         strategy:
             fail-fast: false
             matrix:

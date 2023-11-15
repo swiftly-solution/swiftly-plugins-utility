@@ -25,7 +25,7 @@ jobs:
             - name: Setting up NodeJS 18.x
               uses: actions/setup-node@v3
               with:
-                node-version: "18.x"
+                  node-version: "18.x"
 
             - name: Installing dependencies
               working-directory: swiftly-plugins-utility
@@ -59,9 +59,9 @@ jobs:
               with:
                   name: Swiftly Plugin Windows
                   path: ${{ github.workspace }}/swiftly-plugins-utility/swiftly_utility.exe
-                  
+
             - name: Upload Artifacts Linux
               uses: actions/upload-artifact@v3
               with:
-                  name: Swiftly Plugin Windows
+                  name: Swiftly Plugin Linux
                   path: ${{ github.workspace }}/swiftly-plugins-utility/swiftly_utility

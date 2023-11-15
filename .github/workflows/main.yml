@@ -33,7 +33,7 @@ jobs:
               shell: bash
               run: |
                   npm i -g yarn
-                  yarn install --frozen-lockfile
+                  yarn install --immutable
                   yarn global add esbuild
                   yarn global add pkg
 

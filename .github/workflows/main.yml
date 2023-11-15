@@ -19,7 +19,6 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
               with:
-                  path: swiftly-plugins-utility
                   submodules: recursive
 
             - name: Setting up NodeJS 18.x
@@ -29,7 +28,6 @@ jobs:
                   cache: "yarn"
 
             - name: Installing dependencies
-              working-directory: swiftly-plugins-utility
               shell: bash
               run: |
                   npm i -g yarn
@@ -38,19 +36,16 @@ jobs:
                   yarn global add pkg
 
             - name: Converting TS to JS
-              working-directory: swiftly-plugins-utility
               shell: bash
               run: |
                   yarn build
 
             - name: Building Binary Linux
-              working-directory: swiftly-plugins-utility
               shell: bash
               run: |
                   yarn build:pack:linux
 
             - name: Building Binary Windows
-              working-directory: swiftly-plugins-utility
               shell: bash
               run: |
                   yarn build:pack:windows
@@ -59,10 +54,10 @@ jobs:
               uses: actions/upload-artifact@v3
               with:
                   name: Swiftly Plugins Utility Windows
-                  path: ${{ github.workspace }}/swiftly-plugins-utility/swiftly_utility.exe
+                  path: ${{ github.workspace }}/swiftly_utility.exe
 
             - name: Upload Artifacts Linux
               uses: actions/upload-artifact@v3
               with:
                   name: Swiftly Plugins Utility Linux
-                  path: ${{ github.workspace }}/swiftly-plugins-utility/swiftly_utility
+                  path: ${{ github.workspace }}/swiftly_utility

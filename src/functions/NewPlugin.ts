@@ -58,15 +58,11 @@ endef
 
 build:
 ifeq ($(OS),Windows_NT)
+	@rd /s /q $(BUILD_DIR) 2>NUL || (echo)
 	@rd /s /q $(TEMP_DIR) 2>NUL || (echo)
 else
-	@rm -rf $(TEMP_DIR)
-endif
-
-ifeq ($(OS),Windows_NT)
-	@rd /s /q $(BUILD_DIR) 2>NUL || (echo)
-else
 	@rm -rf $(BUILD_DIR)
+	@rm -rf $(TEMP_DIR)
 endif
 	mkdir $(TEMP_DIR)
 	$(foreach src,$(SRC_FILES),$(call COMPILE_FILE,$(src)))
@@ -248,7 +244,7 @@ extern "C"
 on:
 	push:
 		branches:
-			- '*
+			- '*'
 	pull_request:
 	
 jobs:

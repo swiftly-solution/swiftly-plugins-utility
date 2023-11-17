@@ -25,6 +25,8 @@ export default async (config: Config, plugin_name: string) => {
 		mkdirSync(`${plugin_name}`);
 		mkdirSync(`${plugin_name}/src`, { recursive: true });
 		mkdirSync(`${plugin_name}/includes`, { recursive: true });
+		mkdirSync(`${plugin_name}/lib`, { recursive: true });
+		mkdirSync(`${plugin_name}/.github/workflows`, { recursive: true });
 		writeFileSync(`${plugin_name}/Makefile`, `CC_COMMAND = ${config[config.os].cc}
 CXX_COMMAND = ${config[config.os].cxx}
 PROJECT_NAME = ${plugin_name}
@@ -40,6 +42,10 @@ INCLUDES_FOLDER := $(CURRENT_PATH)/includes
 CC_FLAGS = -I"$(INCLUDES_FOLDER)" -I"$(BEHIND_PATH)/includes"
 CXX_FLAGS = -I"$(INCLUDES_FOLDER)" -I"$(BEHIND_PATH)/includes" -lpthread
 
+ifneq ($(OS),Windows_NT)
+CXX_FLAGS = $(CXX_FLAGS) -fPIC
+endif
+
 rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
 
 SRC_FILES := $(call rwildcard,$(SRC_DIR),*.cpp)
@@ -52,6 +58,12 @@ endef
 
 build:
 ifeq ($(OS),Windows_NT)
+	@rd /s /q $(TEMP_DIR) 2>NUL || (echo)
+else
+	@rm -rf $(TEMP_DIR)
+endif
+
+ifeq ($(OS),Windows_NT)
 	@rd /s /q $(BUILD_DIR) 2>NUL || (echo)
 else
 	@rm -rf $(BUILD_DIR)
@@ -59,7 +71,13 @@ endif
 	mkdir $(TEMP_DIR)
 	$(foreach src,$(SRC_FILES),$(call COMPILE_FILE,$(src)))
 	mkdir $(BUILD_DIR)
+
+ifeq ($(OS),Windows_NT)
 	$(CXX_COMMAND) -shared $(CXX_FLAGS) -o $(BUILD_DIR)/$(PROJECT_NAME).dll $(OBJS_FILES)
+else
+	$(CXX_COMMAND) -shared $(CXX_FLAGS) -o $(BUILD_DIR)/$(PROJECT_NAME).so $(OBJS_FILES)
+endif
+
 ifeq ($(OS),Windows_NT)
 	@rd /s /q $(TEMP_DIR) 2>NUL || (echo)
 else
@@ -224,6 +242,64 @@ extern "C"
 
 #endif
 		`);
+
+		writeFileSync(`${plugin_name}/.github/workflows/build.yml`, `name: "${plugin_name} Compiler"
+
+on:
+	push:
+		branches:
+			- '*
+	pull_request:
+	
+jobs:
+    build:
+        name: Build
+        runs-on: \${{ matrix.os }}
+		
+		container: \${{ matrix.container }}
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [ubuntu-latest, windows-latest]
+                include:
+					- os: windows-latest
+					- os: ubuntu-latest
+					container: registry.gitlab.steamos.cloud/steamrt/sniper/sdk
+		steps:
+			- name: Checkout
+			  uses: actions/checkout@v4
+			  with:
+				path: ${plugin_name}
+				submodules: recursive
+			
+			- name: Checkout Swiftly
+			  uses: actions/checkout@v4
+			  with:
+				repository: swiftly
+				path: swiftly
+			
+			- name: Installing Swiftly Scripting files
+			  run: |
+				cd swiftly; mv plugin_files/scripting/* ..; cd ..
+				
+			- name: Build
+			  working-directory: ${plugin_name}
+			  run: |
+			    make
+				
+			- name: Upload Files - Linux
+			  if: matrix.os == 'ubuntu-latest'
+              uses: actions/upload-artifact@v3
+              with:
+                  name: ${plugin_name} Plugin - Linux
+                  path: \${{ github.workspace }}/${plugin_name}/build/${plugin_name}.so
+				  
+			- name: Upload Files - Windows
+			  if: matrix.os == 'windows-latest'
+			  uses: actions/upload-artifact@v3
+			  with:
+				name: ${plugin_name} Plugin - Windows
+				path: \${{ github.workspace }}/${plugin_name}/build/${plugin_name}.dll`)
 
 		tasks[`Creating Files for plugin "${plugin_name}"`].endTime = Date.now();
 		tasks[`Creating Files for plugin "${plugin_name}"`].status = "done";

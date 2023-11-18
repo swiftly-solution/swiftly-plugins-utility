@@ -4,10 +4,6 @@
 
 This command line executable enables you to easily generate Swiftly Plugins within seconds.
 
-# Requirements
-
-## Windows
-
 # Installation
 
 First, you need to generate it's config file using `./swiftly_utility --genconfig`.

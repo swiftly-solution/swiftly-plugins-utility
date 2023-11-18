@@ -40,10 +40,10 @@ LIBS_DIR := lib
 INCLUDES_FOLDER := $(CURRENT_PATH)/includes
 
 CC_FLAGS = -I"$(INCLUDES_FOLDER)" -I"$(BEHIND_PATH)/includes"
-CXX_FLAGS = -I"$(INCLUDES_FOLDER)" -I"$(BEHIND_PATH)/includes" -lpthread
+CXX_FLAGS := -I"$(INCLUDES_FOLDER)" -I"$(BEHIND_PATH)/includes" -lpthread
 
 ifneq ($(OS),Windows_NT)
-CXX_FLAGS = $(CXX_FLAGS) -fPIC
+    CXX_FLAGS := $(CXX_FLAGS) -fPIC
 endif
 
 rwildcard=$(wildcard $1$2) $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2))
@@ -272,7 +272,8 @@ jobs:
             - name: Checkout Swiftly
                 uses: actions/checkout@v4
                 with:
-                    repository: swiftly
+                    repository: swiftly-solution/swiftly
+                    ref: master
                     path: swiftly
 
             - name: Installing Swiftly Scripting files
@@ -289,14 +290,14 @@ jobs:
                 uses: actions/upload-artifact@v3
                 with:
                     name: ${plugin_name} Plugin - Linux
-                    path: \${{ github.workspace }}/${plugin_name}/build/${plugin_name}.so
+                    path: \${{ github.workspace }}/${plugin_name}/output/${plugin_name}.so
 
             - name: Upload Files - Windows
                 if: matrix.os == 'windows-latest'
                 uses: actions/upload-artifact@v3
                 with:
                     name: ${plugin_name} Plugin - Windows
-                    path: \${{ github.workspace }}/${plugin_name}/build/${plugin_name}.dll
+                    path: \${{ github.workspace }}/${plugin_name}/output/${plugin_name}.dll
         `)
 
         tasks[`Creating Files for plugin "${plugin_name}"`].endTime = Date.now();

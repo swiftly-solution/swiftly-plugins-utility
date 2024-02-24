@@ -6,7 +6,7 @@
   <h3 align="center">[Swiftly] Plugins Utility</h3>
 
   <p align="center">
-    Plugins Utility built for developers who want to use C++ in Swiftly.
+    Plugins Utility built for developers who want to use C++ for coding plugins in Swiftly.
     <br/>
   </p>
 </p>

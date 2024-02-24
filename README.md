@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/swiftly-solution/swiftly-plugins-utility">
-    <img src="https://cdn.swiftlycs2.net/swiftly-logo.png" alt="SwiftlyLogo" width="80" height="80">
+    <img src="https://sttci.b-cdn.net/status.swiftlycs2.net/2105/logo.png" alt="Swiftly Private Message Logo" width="600" height="131">
   </a>
 
   <h3 align="center">[Swiftly] Plugins Utility</h3>

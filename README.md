@@ -1,8 +1,27 @@
-# Swiftly Plugins Utility
+<p align="center">
+  <a href="https://github.com/swiftly-solution/swiftly-plugins-utility">
+    <img src="https://cdn.swiftlycs2.net/swiftly-logo.png" alt="SwiftlyLogo" width="80" height="80">
+  </a>
 
-![workflow](https://github.com/swiftly-solution/swiftly-plugins-utility/actions/workflows/main.yml/badge.svg)
+  <h3 align="center">[Swiftly] Plugins Utility</h3>
 
-This command line executable enables you to easily generate Swiftly Plugins within seconds.
+  <p align="center">
+    Plugins Utility built for developers who want to use C++ in Swiftly.
+    <br/>
+  </p>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/github/downloads/swiftly-solution/swiftly-plugins-utility/total" alt="Downloads"> 
+  <img src="https://img.shields.io/github/contributors/swiftly-solution/swiftly-plugins-utility?color=dark-green" alt="Contributors">
+  <img src="https://img.shields.io/github/issues/swiftly-solution/swiftly-plugins-utility" alt="Issues">
+  <img src="https://img.shields.io/github/license/swiftly-solution/swiftly-plugins-utility" alt="License">
+</p>
+<p align="center">
+  <img src="https://github.com/swiftly-solution/swiftly-plugins-utility/actions/workflows/main.yml/badge.svg" alt="WorkFlow">
+</p>
+
+---
 
 # Installation
 
@@ -54,3 +73,5 @@ Simple, you just need to create a repository, upload your files on GitHub using 
 (!) If you upload the files via Web File Uploader your need to manually install the workflows file.
 
 To simplify your work, you can use [Visual Studio Code](https://code.visualstudio.com/) which automatically has integrated an easy-to-use Github CLI interface.
+
+---

@@ -64,7 +64,25 @@ Options:
 
 # How to compile plugins?
 
-Well, the plugins are designed to be compiled using Github Actions. If you're a geek and you know what you're doing, you can install [MSYS2](https://www.msys2.org/) to compile plugins for Windows and [WSL Ubuntu 20.04](https://www.microsoft.com/store/productId/9MTTCL66CPXJ?ocid=pdpshare).
+Well, the plugins are designed to be compiled using Github Actions, but you can also compile them using Docker.
+
+## How to build plugins using Docker? (Plugins for Linux Verison)
+
+You need to install [Docker for Windows](https://docs.docker.com/desktop/install/windows-install/) and use the following command in the Terminal opened in the folder of the plugin:
+
+**(!)** Replace `PLUGIN_NAME` with your plugin name, for example: `swiftly_shop`
+
+```
+docker run --rm -it -e "FOLDER=PLUGIN_NAME" -v .:/tempfolder/PLUGIN_NAME ghcr.io/swiftly-solution/swiftly:plugin-cross-compiler
+```
+
+## How to build plugins using Docker? (Plugins for Windows Version)
+
+You need to install [MSYS2](https://www.msys2.org/) and [Make for Windows](https://gnuwin32.sourceforge.net/packages/make.htm). After you install them and ensure that they're available via PATH, use the following command in the Terminal opened in the folder of the plugin:
+
+```
+make
+```
 
 ## How to build plugins using Github Actions?
 
